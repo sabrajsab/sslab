@@ -1,0 +1,86 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main()
+{
+    ifstream f1("output2.txt");
+    ofstream f2("objprog.txt");
+    ifstream f3("input.txt");
+    int l1,l2,flag=0;
+    string loc,lab,op,rand,code,s,start,temp="";
+    f1>>loc>>lab>>op>>rand>>code;
+    l1=stoi(loc,nullptr,16);
+    while(f1>>loc>>lab>>op>>rand>>code);
+
+    l2=stoi(loc,nullptr,16);
+    f1.close();
+    f1.open("output2.txt");
+    f3>>s;
+    f2<<'H'<<s;
+    for(int i=1;i<=6-s.size();++i)                 //program name
+        f2<<' ';
+
+    f1>>start;
+    f1.close();
+    for(int i=1;i<=6-start.size();++i)                 //starting address
+        f2<<'0';
+    f2<<start;
+
+    for(int i=1;i<=6-to_string(l2-l1).size();++i)  //yaha thodi
+        f2<<'0';                                   //si galti
+    f2<<hex<<(l2-l1)<<endl;                     //hai
+
+
+    f1.open("output2.txt");
+    string last,lastloc;
+    f1>>loc>>lab>>op>>rand>>code;
+    f2<<'T';
+    for(int i=1;i<=6-loc.size();++i)
+        f2<<'0';
+    f2<<loc;
+    temp+=code;
+    while(f1>>loc>>lab>>op>>rand>>code)
+    {
+        if(op=="END")
+            break;
+        if(temp.size()>60)
+        {
+            f2<<hex<<(temp.size()-last.size())/2;
+            f2<<temp.substr(0,temp.size()-last.size());
+            temp=last;
+            f2<<endl<<'T';
+            for(int i=1;i<=6-lastloc.size();++i)
+                f2<<'0';
+            f2<<lastloc;
+        }
+
+        if(code=="**")
+        {
+            f2<<hex<<temp.size()/2;
+            f2<<temp<<endl;
+            temp="";
+            while(f1>>loc>>lab>>op>>rand>>code)
+            {
+                if(code!="**")
+                    break;
+                flag=100;
+            }
+            if(flag==100)
+                break;
+            f2<<'T';
+            for(int i=1;i<=6-loc.size();++i)
+                f2<<'0';
+            f2<<loc;
+        }
+
+        lastloc=loc;
+        last=code;
+        temp+=code;
+    }
+    f2<<'E';
+    for(int i=1;i<=6-start.size();++i)                 //starting address
+        f2<<'0';
+    f2<<start;
+    return 0;
+}
