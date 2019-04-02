@@ -1,0 +1,59 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main()
+{
+    string label,opcode,operand,var1,var2;
+    int locctr=0;
+    ofstream f2("output.txt");
+    ifstream f1("input.txt");
+    ofstream f4("symtab.txt");
+    while(!f1.eof())
+    {
+
+        f1>>label>>opcode>>operand;
+
+        //cout<<label<<'\t'<<opcode<<'\t'<<operand<<endl;
+        if(opcode=="START")
+        {
+
+            locctr=stoi(operand,nullptr,16);
+            continue;
+        }
+        if(label!="**")
+        {
+            f4<<label<<'\t'<<hex<<locctr<<endl;
+        }
+        f2<<hex<<locctr<<'\t'<<label<<'\t'<<opcode<<'\t'<<operand<<endl;
+        ifstream f3("optab.txt");
+        while(f3>>var1>>var2)
+        {
+            if(var1==opcode)
+            {
+                locctr+=3;
+                break;
+            }
+        }
+        f3.close();
+        if(opcode=="WORD")
+            locctr+=3;
+        else if(opcode=="RESW")
+            locctr+=(stoi(operand)*3);
+        else if(opcode=="BYTE")
+        {
+            if(operand[0]=='C')
+                locctr+=(operand.size()-3);
+            else if(operand[0]=='X')
+                locctr+=((operand.size()-3)/2);
+        }
+        else if(opcode=="RESB")
+            locctr+=stoi(operand);
+
+
+    }
+    f1.close();
+    f2.close();
+    
+    return 0;
+}
