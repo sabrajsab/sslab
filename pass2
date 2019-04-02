@@ -1,0 +1,69 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main()
+{
+    ifstream f1("output.txt");
+    ofstream f2("output2.txt");
+
+    string loc,lab,opcode,operand,obj,op,code;
+    while(f1>>loc>>lab>>opcode>>operand)
+    {
+        obj="";
+        ifstream f4("optab.txt");
+        while(f4>>op>>code)
+        {
+            if(op==opcode)
+            {
+                obj+=(code);
+                break;
+            }
+        }
+        f4.close();
+
+        ifstream f3("symtab.txt");
+        while(f3>>op>>code)
+        {
+            if(op==operand)
+            {
+                obj+=(code);
+                break;
+            }
+        }
+        f3.close();
+        f2<<loc<<'\t'<<lab<<'\t'<<opcode<<'\t'<<operand<<'\t';
+        if(opcode=="BYTE")
+        {
+            if(operand[0]=='C')
+                for(int i=2;i<operand.size()-1;++i)
+                    f2<<hex<<(operand[i]-'A'+65);
+            else
+            {
+                for(int j=1;j<=6-(operand.size()-3);++j)
+                {
+                    f2<<'0';
+                }
+                f2<<operand.substr(2,operand.size()-3);
+
+            }
+
+            f2<<endl;
+            continue;
+        }
+        else if(opcode=="WORD")
+        {
+            for(int j=1;j<=6-(operand.size());++j)
+                {
+                    f2<<'0';
+                }
+            f2<<operand<<endl;
+        }
+
+        f2<<obj<<endl;
+    }
+    f1.close();
+    f2.close();
+
+    return 0;
+}
