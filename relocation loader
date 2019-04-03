@@ -1,0 +1,39 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main()
+{
+    ifstream f1("input.txt");
+    ofstream f2("output.txt");
+    string s,dumm,start,m;
+    cout<<"Enter starting address : ";
+    int temp,temp2;
+    string a;
+    cin>>hex>>a;
+    f1>>s;
+    while(!f1.eof())
+    {
+        if(s=="T")
+        {
+            f1>>start>>dumm>>m;
+            string b=bitset<4>(stoi(m,nullptr,16)).to_string();
+            cout<<b[0]<<b[1]<<b[2]<<b[3];
+            int i=0,k=0;
+            while(f1>>s)
+            {
+                if(s=="E" || s=="T")
+                    break;
+                temp2=(b[k++]=='1'?stoi(a,nullptr,16):0);
+                cout<<hex<<a;
+                temp=stoi(start,nullptr,16)+i+temp2;
+                f2<<hex<<temp<<' '<<s<<endl;
+                i+=3;
+            }
+        }
+        else f1>>s;
+    }
+    f2.close();
+    f1.close();
+    return 0;
+}
