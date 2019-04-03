@@ -1,69 +1,71 @@
-#include <bits/stdc++.h>
-
+#include<bits/stdc++.h>
 using namespace std;
+int main(){
 
-int main()
-{
-    ifstream f1("output.txt");
-    ofstream f2("output2.txt");
+	ifstream rp1,rp2,rp3;
+	rp1.open("output.txt");
+	rp2.open("symtab.txt");
+	rp3.open("optab.txt");
+	ofstream wp;
+	wp.open("pass2_output.txt");
 
-    string loc,lab,opcode,operand,obj,op,code;
-    while(f1>>loc>>lab>>opcode>>operand)
-    {
-        obj="";
-        ifstream f4("optab.txt");
-        while(f4>>op>>code)
-        {
-            if(op==opcode)
-            {
-                obj+=(code);
-                break;
+	map<string,string> label_address;
+	string label,address;
+	while(rp2>>label>>address){
+		label_address[label]=address;
+	}
+	rp2.close();
+
+	map<string,string> inst_opcodes;
+	string opcode,value;
+	while(rp3>>opcode>>value){
+		inst_opcodes[opcode]=value;
+	}
+	rp3.close();
+
+	string operand;
+	while(rp1>>address>>label>>opcode>>operand){
+		string temp="";
+
+		if(operand[operand.size()-1]=='X'){
+            string addr;
+            temp+=inst_opcodes[opcode];
+			addr=label_address[operand.substr(0,operand.size()-2)];
+            if(stoi(addr.substr(0,1),nullptr,16)<8){
+                stringstream ss;
+                string t;
+                ss<<std::hex<<stoi(addr.substr(0,1),nullptr,16)+8;
+                ss>>t;
+                temp+=t;
+                temp+=addr.substr(1);
             }
-        }
-        f4.close();
-
-        ifstream f3("symtab.txt");
-        while(f3>>op>>code)
-        {
-            if(op==operand)
-            {
-                obj+=(code);
-                break;
-            }
-        }
-        f3.close();
-        f2<<loc<<'\t'<<lab<<'\t'<<opcode<<'\t'<<operand<<'\t';
-        if(opcode=="BYTE")
-        {
-            if(operand[0]=='C')
-                for(int i=2;i<operand.size()-1;++i)
-                    f2<<hex<<(operand[i]-'A'+65);
-            else
-            {
-                for(int j=1;j<=6-(operand.size()-3);++j)
-                {
-                    f2<<'0';
+		}
+		else if(opcode=="BYTE"){
+            if(operand[0]=='C'){
+                string t=operand.substr(2,operand.size()-3);
+                stringstream ss;
+                for(int i=0;i<t.size();++i){
+                    ss<<std::hex<<int(t[i]);
                 }
-                f2<<operand.substr(2,operand.size()-3);
-
+                ss>>temp;
+            }else{
+                temp=operand.substr(2,operand.size()-3);
             }
+		}
+		else if(opcode=="WORD"){
+            temp=operand;
+            temp.insert(0,6-temp.size(),'0');
+		}
+		else if(opcode=="RESW" || opcode=="RESB") continue;
+		else{
+            temp+=inst_opcodes[opcode];
+            temp+=label_address[operand];
+		}
+		wp<<address<<"\t"<<label<<"\t"<<opcode<<"\t"<<operand<<"\t"<<temp<<endl;
+	}
 
-            f2<<endl;
-            continue;
-        }
-        else if(opcode=="WORD")
-        {
-            for(int j=1;j<=6-(operand.size());++j)
-                {
-                    f2<<'0';
-                }
-            f2<<operand<<endl;
-        }
-
-        f2<<obj<<endl;
-    }
-    f1.close();
-    f2.close();
-
-    return 0;
+	rp1.close();
+	wp.close();
+	return 0;
 }
+
