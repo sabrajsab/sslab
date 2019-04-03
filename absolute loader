@@ -1,0 +1,32 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main()
+{
+    ifstream f1("input.txt");
+    ofstream f2("output.txt");
+    string s,dumm,start;
+    f1>>s;
+    while(!f1.eof())
+    {
+        if(s=="T")
+        {
+            f1>>start>>dumm;
+            int i=0;
+            while(f1>>s)
+            {
+                if(s=="E" || s=="T")
+                    break;
+                f2<<hex<<stoi(start,nullptr,16)+i++<<' '<<s[0]<<s[1]<<endl;
+                f2<<hex<<stoi(start,nullptr,16)+i++<<' '<<s[2]<<s[3]<<endl;
+                f2<<hex<<stoi(start,nullptr,16)+i++<<' '<<s[4]<<s[5]<<endl;
+
+            }
+        }
+        else f1>>s;
+    }
+    f2.close();
+    f1.close();
+    return 0;
+}
